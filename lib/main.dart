@@ -1,4 +1,19 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'dart:io' show Platform;
+import 'dart:async';
+import 'dart:core';
+import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+//import 'pref.dart';
 
 void main() {
   runApp(MyApp());
@@ -46,68 +61,205 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
-  void _incrementCounter() {
+
+  static final String uploadEndPoint = 'http://localhost:80/desktop/';
+
+  String session_id = "234";
+  String status = '';
+  String errMessage = 'Не удалось создать рабочий стол';
+
+  TextEditingController nameText;
+  TextEditingController platText;
+
+  @override
+  void initState() {
+
+  }
+
+  setStatus(String message) {
+
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      status = message;
     });
+  }
+
+  launchApp(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  launchVNC() async {
+
+    //print(prefs?.getString('session_id') ?? 'NULL');
+    const url = 'vnc://vnc@xxx.engineer';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      showAlertDialog(this.context);
+    }
+  }
+
+
+  openMarket() {
+    String linkShop;
+    // Or, use a predicate getter.
+    if (Platform.isAndroid) {
+      linkShop =  "https://play.google.com/store/apps/details?id=com.realvnc.viewer.android&hl=ru&gl=US";
+    } else if (Platform.isIOS) {
+      linkShop =  "https://apps.apple.com/ru/app/vnc-viewer-remote-desktop/id352019548";
+    }
+    launchApp(linkShop);
+  }
+
+  createDesktop(String plat, String name) async {
+    //setStatus(plat + " " + name);
+
+
+    print(plat + " " + name);
+    http.post(uploadEndPoint, body: {
+      "plat": 'plat',
+      "name": 'name',
+    }).then((result) {
+      final body = json.decode(result.body);
+      print(body["vnc"]);
+      print(body["session_id"]);
+      session_id = body["session_id"];
+      launchApp(status);
+      setStatus(result.statusCode == 200 ? json.decode(result.body)["vnc"] : errMessage);
+    }).catchError((error) {
+      setStatus(errMessage);
+      print(error);
+    });
+  }
+
+  //VNC not found
+  showAlertDialog(BuildContext context) {
+
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Позже"),
+      onPressed:  () {
+        Navigator.of(context).pop(); // dismiss dialog
+        //launchMissile();
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("СКАЧАТЬ"),
+      onPressed:  () {
+
+        //String linkShop = prepareVncClient();
+        //launchApp(linkShop);
+        openMarket();
+        Navigator.of(context).pop(); // dismiss dialog
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Не найден VNC Viewer"),
+      content: Text("Хотите перейти в магазин приложений, чтобы скачать VNC Viewer?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
+      // appBar: AppBar(
+      //   title: Text("GnuRadio"),
+      // ),
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(session_id),
+        centerTitle: true,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Container(
+        padding: EdgeInsets.all(30.0),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+            SizedBox(
+              height: 30.0,
+            ),
+            new Image.asset(
+              'assets/icon.jpg',
+              fit: BoxFit.fitWidth,
+              //width: MediaQuery.of(context).size.width * 0.50,
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            TextField(
+                controller: platText = new TextEditingController(),
+                decoration: const InputDecoration(
+                  labelText: 'Номер группы',
+                )),
+
+            TextField(
+                controller: nameText = new TextEditingController(),
+                decoration: const InputDecoration(
+                  labelText: 'ФИО',
+                )),
+            SizedBox(
+              height: 20.0,
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                primary: Colors.white,
+                backgroundColor: Colors.orange,
+              ),
+              onPressed: () {
+                createDesktop(platText.text, nameText.text);
+              },
+              child: Text('Создать рабочий стол'),
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            OutlineButton(
+              onPressed: () {
+                launchVNC();
+              },
+              child: Text('Подключиться к рабочему столу'),
+            ),
+            SizedBox(
+              height: 20.0,
             ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              "session_id: " + session_id,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize: 20.0,
+              ),
+            ),
+            Text(
+              status,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.w500,
+                fontSize: 20.0,
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
