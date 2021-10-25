@@ -1,17 +1,10 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:core';
-import 'dart:io';
-import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
-import 'package:frontend/app_config.dart';
-import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
 
-import 'home.dart';
+import 'pages/home_page.dart';
 
-void main()  {
+void main() {
   runApp(MyApp());
 }
 
@@ -36,4 +29,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

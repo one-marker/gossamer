@@ -21,26 +21,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   static final String apiUrl = 'http://192.168.0.128:3000';
 
-  String sessionStatus = "";
   String sessionId = "";
+
   String status = "";
-  String errMessage = 'Не удалось создать рабочий стол';
 
   String connectionUrl = "";
-  String sessionUrl = "";
 
-  TextEditingController nameTextField = new TextEditingController();
-  TextEditingController platTextField = new TextEditingController();
+  final TextEditingController nameTextField = new TextEditingController();
+  final TextEditingController platTextField = new TextEditingController();
 
-  setStatus(String status) {
+  setStatusMessage(String status) {
     setState(() {
       status = status;
     });
   }
-
-
-
-
 
   showMessageDialog(message) {
     showDialog(
@@ -77,12 +71,12 @@ class _MyHomePageState extends State<MyHomePage> {
         sessionId = body["session_id"].toString();
         showStatusAlert(this.context, sessionId);
 
-        setStatus(result.statusCode == 200
+        setStatusMessage(result.statusCode == 200
             ? json.decode(result.body)["connection_url"]
-            : errMessage);
+            : result.statusCode);
       }
     }).catchError((error) {
-      setStatus(errMessage);
+      setStatusMessage("Не удалось создать рабочий стол");
       print(error);
     });
   }
@@ -101,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
 
-    time = Timer.periodic(Duration(seconds: 5), (Timer timer) {
+    time = Timer.periodic(Duration(seconds: 2), (Timer timer) {
       http.get(apiUrl + "/session/" + sessionId).then((result) {
         final body = json.decode(result.body);
         status = body["status"];
@@ -213,6 +207,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             },
                           )
                         ],
+
                       );
                     },
                   );
@@ -247,8 +242,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             OutlineButton(
               onPressed: () {
-                //createDesktop();
-                print(status);
                 launchVNC(this.context, connectionUrl);
               },
               child: Text(
@@ -258,15 +251,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             SizedBox(
               height: 40.0,
-            ),
-            Text(
-              "session id: " + sessionId,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-                fontSize: 20.0,
-              ),
             ),
             Text(
               connectionUrl,
