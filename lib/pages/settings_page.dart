@@ -2,51 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:frontend/config/settingsUtil.dart';
 
-saveSettings(String name, String group) async{
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  var settings = jsonEncode({
-    "name": name,
-    "group": group
-  });
-  prefs.setString('settings', settings);
-}
-saveProfile(String name, String group) async {
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setString('SavedName', name);
-  prefs.setString('SavedGroup', group);
 
-}
 
-saveIDNote(String ID, String host) async{
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  List IDlist = prefs.getStringList("ID_host");
-  IDlist.add(ID + " " + host);
-  prefs.setString("ID_host", host);
-
-}
-Future<String> getSavedProfile(String flag) async{
-
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-
-  if (flag == "name") {
-    String stringValue = prefs.getString('SavedName');
-    print(prefs.getString("ID_host"));
-    return stringValue;
-  }
-  else if (flag == "group"){
-    String stringValue = prefs.getString('SavedGroup');
-    return stringValue;
-  }
-  else if (flag == "settings"){
-    String stringValue = prefs.getString('settings');
-    return stringValue;
-  }
-
-}
 class SettingsScreen extends StatelessWidget{
 
   @override
@@ -62,11 +23,18 @@ class SettingsScreen extends StatelessWidget{
               Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileSettingsScreen()));
             },
           ),
+          // ListTile(
+          //   title: Text('Подключения'),
+          //   trailing: Icon(Icons.keyboard_arrow_right),
+          //   onTap: () {
+          //     Navigator.push(context, MaterialPageRoute(builder: (context) => ConnectionsSettingsScreen()));
+          //   },
+          // ),
           ListTile(
-            title: Text('Подключения'),
+            title: Text('API Endpoint'),
             trailing: Icon(Icons.keyboard_arrow_right),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ConnectionsSettingsScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => EndpointSettingsScreen()));
             },
           ),
         ],
@@ -83,21 +51,32 @@ class ProfileSettingsScreen extends StatefulWidget {
 
 }
 
+class EndpointSettingsScreen extends StatefulWidget {
+
+  @override
+  createState() => new EndpointSettingsScreenState();
+
+}
+
 class ProfileSettingsScreenState extends State<ProfileSettingsScreen>{
 
-  TextEditingController fullnameText;
-  TextEditingController groupText;
+  TextEditingController fullnameText =new TextEditingController();
+  TextEditingController groupText = new TextEditingController();
 
 
 
 
   @override
   initState() {
-
     super.initState();
-    getSavedProfile("name").then((value) {fullnameText.text = value;});
-    getSavedProfile("group").then((value) {groupText.text = value;});
 
+
+    getIntFromLocalMemory('fio').then((value) =>
+      fullnameText.text = value
+    );
+    getIntFromLocalMemory('group').then((value) =>
+      groupText.text = value
+    );
 
   }
 
@@ -110,13 +89,24 @@ class ProfileSettingsScreenState extends State<ProfileSettingsScreen>{
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
+              // SizedBox(
+              //   height: 20.0,
+              // ),
+              // new Image.asset(
+              //   'assets/user.jpg',
+              //   fit: BoxFit.fitWidth,
+              //   width: 100,
+              // ),
+              // SizedBox(
+              //   height: 20.0,
+              // ),
               TextField(
-                  controller: fullnameText = new TextEditingController(),
+                  controller: fullnameText ,
                   decoration: const InputDecoration(
                     labelText: 'ФИО',
                   )),
               TextField(
-                  controller:  groupText = new TextEditingController(),
+                  controller:  groupText,
                   decoration: const InputDecoration(
                     labelText: 'Группа',
                   )),
@@ -126,10 +116,11 @@ class ProfileSettingsScreenState extends State<ProfileSettingsScreen>{
               TextButton(
                 style: TextButton.styleFrom(
                   primary: Colors.white,
-                  backgroundColor: Colors.orange,
+                  backgroundColor: Colors.black87,
                 ),
                 onPressed: () {
-                  saveSettings(fullnameText.text, groupText.text);
+                  saveIntInLocalMemory('fio', fullnameText.text);
+                  saveIntInLocalMemory('group', groupText.text);
                 },
                 child: Text('Сохранить'),
               ),
@@ -197,6 +188,64 @@ class ConnectionsSettingsScreen extends StatelessWidget {
 
                 },
                 child: Text('Удалить рабочий стол'),
+              ),
+              SizedBox(
+                height: 10.0,
+              ),
+              OutlineButton(
+                  onPressed: (){
+                    Navigator.pop(context);
+                  },
+                  child: Text('Назад')
+              )
+            ]
+        ),
+      ),
+    );
+  }
+}
+
+
+// API Endpoint
+class EndpointSettingsScreenState extends State<EndpointSettingsScreen> {
+
+  TextEditingController endpointUrlText = new TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    getIntFromLocalMemory('apiUrl').then((value) =>
+        endpointUrlText.text = value
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('API Endpoint')),
+      body: Container(
+        padding: EdgeInsets.all(30.0),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              TextField(
+                  controller: endpointUrlText,
+                  decoration: const InputDecoration(
+                    labelText: 'Точка подключения (http://)',
+                  )),
+              SizedBox(
+                height: 50.0,
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  primary: Colors.white,
+                  backgroundColor: Colors.green,
+                ),
+                onPressed: () {
+                  saveIntInLocalMemory('apiUrl', endpointUrlText.text);
+                },
+                child: Text('Сохранить'),
               ),
               SizedBox(
                 height: 10.0,

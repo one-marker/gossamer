@@ -4,8 +4,9 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/vnc_install.dart';
+import 'package:frontend/pages/settings_page.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:frontend/config/settingsUtil.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -19,7 +20,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  static final String apiUrl = 'http://192.168.0.128:3000';
+  String apiUrl = 'http://192.168.0.128:3000';
 
   String sessionId = "";
 
@@ -29,6 +30,28 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final TextEditingController nameTextField = new TextEditingController();
   final TextEditingController platTextField = new TextEditingController();
+
+  @override
+  void didChangeDependencies() {
+    print("didChangeDependencies");
+  }
+
+  //@override
+  void initState() {
+    //super.initState();
+    print("initState");
+    getIntFromLocalMemory('fio').then((value) => {
+      nameTextField.text = value
+    });
+    getIntFromLocalMemory('group').then((value) => {
+      platTextField.text = value
+    });
+    getIntFromLocalMemory('apiUrl').then((value) => {
+      apiUrl = value
+    });
+
+    print(apiUrl);
+  }
 
   setStatusMessage(String status) {
     setState(() {
@@ -171,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
             TextField(
                 controller: platTextField,
                 decoration: const InputDecoration(
-                  labelText: 'Номер взвода',
+                  labelText: 'Номер группы',
                 )),
             TextField(
                 controller: nameTextField,
@@ -198,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: Text("Неправильные данные!"),
-                        content: Text("Взвод состоит только из целых чисел"),
+                        content: Text("Группа состоит только из целых чисел"),
                         actions: [
                           FlatButton(
                             child: Text("Закрыть"),
@@ -246,6 +269,18 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: Text(
                 'Подключиться',
+                textAlign: TextAlign.center,
+              ),
+            ),
+            OutlineButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsScreen()),
+                ).whenComplete(() => initState());
+              },
+              child: Text(
+                'Настройки',
                 textAlign: TextAlign.center,
               ),
             ),

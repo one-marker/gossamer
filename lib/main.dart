@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/theme.dart';
 
 import 'pages/home_page.dart';
 
@@ -20,12 +21,14 @@ class MyApp extends StatelessWidget {
         }
       },
       child: MaterialApp(
-        title: 'GnuRadio Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+        title: 'Gnu Radio',
+        theme: buildThemeData(),
         home: MyHomePage(),
       ),
     );
   }
 }
+
+//ThemeData(
+//           primarySwatch: Colors.blue,
+//         ),
