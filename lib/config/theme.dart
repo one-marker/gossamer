@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'file:///Users/marker/VucProjects/frontend/util/fonts.dart';
+import 'package:frontend/config/fonts.dart';
 
 import 'colours.dart';
 

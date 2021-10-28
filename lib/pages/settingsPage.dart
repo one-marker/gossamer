@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/utils/settingsUtil.dart';
+import 'package:frontend/utils/configUtil.dart';
 
 
 
@@ -71,10 +71,10 @@ class ProfileSettingsScreenState extends State<ProfileSettingsScreen>{
     super.initState();
 
 
-    getIntFromLocalMemory('fio').then((value) =>
+    getStringFromLocalMemory('fio').then((value) =>
       fullnameText.text = value
     );
-    getIntFromLocalMemory('group').then((value) =>
+    getStringFromLocalMemory('group').then((value) =>
       groupText.text = value
     );
 
@@ -119,8 +119,8 @@ class ProfileSettingsScreenState extends State<ProfileSettingsScreen>{
                   backgroundColor: Colors.black87,
                 ),
                 onPressed: () {
-                  saveIntInLocalMemory('fio', fullnameText.text);
-                  saveIntInLocalMemory('group', groupText.text);
+                  saveStringInLocalMemory('fio', fullnameText.text);
+                  saveStringInLocalMemory('group', groupText.text);
                 },
                 child: Text('Сохранить'),
               ),
@@ -215,7 +215,7 @@ class EndpointSettingsScreenState extends State<EndpointSettingsScreen> {
   void initState() {
     super.initState();
 
-    getIntFromLocalMemory('apiUrl').then((value) =>
+    getStringFromLocalMemory('apiUrl').then((value) =>
         endpointUrlText.text = value
     );
   }
@@ -243,7 +243,7 @@ class EndpointSettingsScreenState extends State<EndpointSettingsScreen> {
                   backgroundColor: Colors.green,
                 ),
                 onPressed: () {
-                  saveIntInLocalMemory('apiUrl', endpointUrlText.text);
+                  saveStringInLocalMemory('apiUrl', endpointUrlText.text);
                 },
                 child: Text('Сохранить'),
               ),

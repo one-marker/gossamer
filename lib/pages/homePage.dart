@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'dart:core';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/vnc_install.dart';
-import 'package:frontend/pages/settings_page.dart';
+import 'package:frontend/vncClient.dart';
+import 'package:frontend/pages/settingsPage.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/utils/settingsUtil.dart';
+import 'package:frontend/utils/configUtil.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -40,13 +40,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     //super.initState();
     print("initState");
-    getIntFromLocalMemory('fio').then((value) => {
+    getStringFromLocalMemory('fio').then((value) => {
       nameTextField.text = value
     });
-    getIntFromLocalMemory('group').then((value) => {
+    getStringFromLocalMemory('group').then((value) => {
       platTextField.text = value
     });
-    getIntFromLocalMemory('apiUrl').then((value) => {
+    getStringFromLocalMemory('apiUrl').then((value) => {
       apiUrl = value
     });
 

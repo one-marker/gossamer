@@ -1,9 +1,9 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
-import 'file:///Users/marker/VucProjects/frontend/util/theme.dart';
+import 'config/theme.dart';
 
-import 'pages/home_page.dart';
+import 'pages/homePage.dart';
 
 void main() {
   runApp(MyApp());
