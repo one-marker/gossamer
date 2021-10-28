@@ -1,7 +1,7 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/theme.dart';
+import 'file:///Users/marker/VucProjects/frontend/util/theme.dart';
 
 import 'pages/home_page.dart';
 

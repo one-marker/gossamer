@@ -1,8 +1,8 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 /*
   * It saves the int value to the local memory.
   * */
-import 'package:shared_preferences/shared_preferences.dart';
-
 Future<String> getIntFromLocalMemory(String key) async {
   var pref = await SharedPreferences.getInstance();
   var value = pref.getString(key) ??  "";

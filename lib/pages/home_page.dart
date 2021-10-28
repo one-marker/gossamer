@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/vnc_install.dart';
 import 'package:frontend/pages/settings_page.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/config/settingsUtil.dart';
+import 'package:frontend/utils/settingsUtil.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -260,9 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: Text('Создать рабочий стол'),
             ),
-            SizedBox(
-              height: 10.0,
-            ),
+
             OutlineButton(
               onPressed: () {
                 launchVNC(this.context, connectionUrl);
@@ -271,6 +269,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 'Подключиться',
                 textAlign: TextAlign.center,
               ),
+            ),
+            SizedBox(
+              height: 20.0,
             ),
             OutlineButton(
               onPressed: () {

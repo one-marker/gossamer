@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/config/settingsUtil.dart';
+import 'package:frontend/utils/settingsUtil.dart';
 
 
 
